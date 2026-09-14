@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: cold-apply-agent
+    runtime: python
+    plan: free
+    region: singapore # pick the region closest to you; free plan available on all
+    buildCommand: pip install -r multi_tool_agent/requirements.txt
+    startCommand: uvicorn multi_tool_agent.webhook_app:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.2
+
+      # --- secrets: set these in the Render dashboard, not here ---
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_WEBHOOK_SECRET
+        sync: false
+      - key: TELEGRAM_ALLOWED_USER_IDS
+        sync: false
+      - key: SMTP_EMAIL
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+
+      # --- non-secret defaults, edit freely ---
+      - key: COLD_APPLY_MODEL
+        value: openai/gpt-4o-mini
+      - key: COLD_APPLY_DRY_RUN
+        value: "false"
+      # Where Render mounts Secret Files (candidate.json, master_profile.md,
+      # resume.pdf) - none of those are in this repo, see README.
+      - key: SECRETS_DIR
+        value: /etc/secrets

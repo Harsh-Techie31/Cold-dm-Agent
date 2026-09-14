@@ -1,0 +1,14 @@
+{
+  "name": "Your Full Name",
+  "email": "you@example.com",
+  "phone": "+1 555 000 0000",
+  "location": "City, Country (open to remote)",
+  "links": {
+    "linkedin": "https://linkedin.com/in/you",
+    "github": "https://github.com/you",
+    "portfolio": "https://you.dev"
+  },
+  "resume_path": "resume/resume.pdf",
+  "resume_filename": "Your_Name_Resume.pdf",
+  "default_tone": "direct, confident, concise"
+}

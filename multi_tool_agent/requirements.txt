@@ -1,0 +1,4 @@
+google-adk>=2.8.0        # pulls in fastapi + uvicorn already, used by webhook_app.py
+requests>=2.31
+litellm>=1.40             # only needed for OpenAI / non-Gemini models
+python-telegram-bot>=21   # Bot/Update classes (telegram_bot.py and webhook_app.py)

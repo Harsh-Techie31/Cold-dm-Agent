@@ -1,0 +1,31 @@
+# secrets - never commit
+.env
+**/.env
+.env.*
+!.env.example
+
+# personal data - never commit (real profile/resume); .example files stay tracked
+multi_tool_agent/profile/candidate.json
+multi_tool_agent/profile/master_profile.md
+multi_tool_agent/resume/*.pdf
+!multi_tool_agent/profile/*.example.*
+
+# python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# adk local state
+.adk/
+
+# editor/os
+.DS_Store
+Thumbs.db
+
+# backups
+*.bak
+
+# logs
+*.log
