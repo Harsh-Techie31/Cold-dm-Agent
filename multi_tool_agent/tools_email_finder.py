@@ -5,6 +5,7 @@ for page fetches, then ranks any addresses it finds. Network-dependent and
 best-effort: treat "low" confidence results as guesses, not facts.
 """
 
+import asyncio
 import re
 import urllib.parse
 
@@ -145,7 +146,7 @@ def _score(email: str) -> tuple[str, int]:
     return "low", 2  # looks personal; could be a real recruiter, could be noise
 
 
-def find_hiring_email(company: str, domain_hint: str = "") -> dict:
+async def find_hiring_email(company: str, domain_hint: str = "") -> dict:
     """Finds likely hiring/recruiting email addresses for a company.
 
     Use only when the blob had no email. Results are best-effort and network
@@ -160,6 +161,13 @@ def find_hiring_email(company: str, domain_hint: str = "") -> dict:
         dict: {status, domain, candidates: [{email, source, confidence}]}. Candidates
         are sorted best-first. May be empty.
     """
+    # This does several sequential blocking `requests` calls (each up to
+    # _TIMEOUT seconds). Run it off the event loop so a webhook host's
+    # /health endpoint (and everything else) stays responsive while it runs.
+    return await asyncio.to_thread(_find_hiring_email_blocking, company, domain_hint)
+
+
+def _find_hiring_email_blocking(company: str, domain_hint: str = "") -> dict:
     domain = (domain_hint or "").strip().lower().removeprefix("www.")
     if not domain:
         domain = _guess_official_domain(company)

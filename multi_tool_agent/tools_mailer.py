@@ -1,5 +1,6 @@
 """Mailer tool: send the finished application via Gmail SMTP with the resume attached."""
 
+import asyncio
 import os
 import smtplib
 from email.mime.application import MIMEApplication
@@ -13,7 +14,7 @@ from .config import load_candidate
 EMAIL_RE_OK = lambda s: isinstance(s, str) and "@" in s and "." in s.split("@")[-1]
 
 
-def send_application(to_address: str, subject: str, body: str) -> dict:
+async def send_application(to_address: str, subject: str, body: str) -> dict:
     """Sends the cold job application email, attaching the candidate's resume PDF.
 
     Args:
@@ -25,6 +26,12 @@ def send_application(to_address: str, subject: str, body: str) -> dict:
         dict: {status, message, dry_run, attached}. On success the email has been
         sent (unless COLD_APPLY_DRY_RUN is set, in which case it was only built).
     """
+    # The actual SMTP connect/login/send is blocking. Run it off the event
+    # loop so a webhook host's /health endpoint stays responsive while it runs.
+    return await asyncio.to_thread(_send_application_blocking, to_address, subject, body)
+
+
+def _send_application_blocking(to_address: str, subject: str, body: str) -> dict:
     if not EMAIL_RE_OK(to_address):
         return {"status": "error", "error_message": f"invalid recipient: {to_address!r}"}
     if not subject.strip() or not body.strip():
