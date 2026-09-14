@@ -4,11 +4,13 @@
 .env.*
 !.env.example
 
-# personal data - never commit (real profile/resume); .example files stay tracked
-multi_tool_agent/profile/candidate.json
-multi_tool_agent/profile/master_profile.md
-multi_tool_agent/resume/*.pdf
+# personal data - never commit. Default-deny the whole directory (not just
+# exact filenames) so a stray copy like "master_profile-1.md" or
+# "candidate (1).json" can never slip through an exact-name rule again.
+multi_tool_agent/profile/*
 !multi_tool_agent/profile/*.example.*
+multi_tool_agent/resume/*
+!multi_tool_agent/resume/README.txt
 
 # python
 __pycache__/

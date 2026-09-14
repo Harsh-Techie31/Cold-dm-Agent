@@ -47,7 +47,11 @@ def _build_model(name: str):
 
         if is_openai and "/" not in name:
             name = f"openai/{name}"
-        return LiteLlm(model=name)
+        # Render's free-tier network occasionally drops the first outbound
+        # HTTPS connection after a cold start ("Connection error." from
+        # litellm/openai). Retry transient connection failures instead of
+        # failing the whole 8-call pipeline on one blip.
+        return LiteLlm(model=name, timeout=60, num_retries=3)
     return name  # Gemini model name
 
 
